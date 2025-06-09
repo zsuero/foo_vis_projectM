@@ -38,6 +38,8 @@ static cfg_int cfg_preset_duration(guid_cfg_preset_duration, 20);
 
 static bool try_fullscreen = false;
 
+static cfg_bool g_start_in_fullscreen("projectm.start_fullscreen", true);
+
 class ui_element_instance_projectM : public ui_element_instance, public CWindowImpl<ui_element_instance_projectM>
 {
 public:
@@ -140,6 +142,15 @@ protected:
 void ui_element_instance_projectM::initialize_window(HWND parent)
 {
 	WIN32_OP(Create(parent) != NULL);
+
+	if (g_start_in_fullscreen) {
+		int screen_width = GetSystemMetrics(SM_CXSCREEN);
+		int screen_height = GetSystemMetrics(SM_CYSCREEN);
+
+		SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+		SetWindowPos(hwnd, HWND_TOP, 0, 0, screen_width, screen_height, SWP_SHOWWINDOW);
+		ShowWindow(hwnd, SW_MAXIMIZE);
+	}
 }
 
 typedef BOOL(WINAPI *PFNWGLSWAPINTERVALEXTPROC)(int interval);
